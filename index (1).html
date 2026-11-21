@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ParivaarMap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Mukta:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F4F9; --surface:#FFFFFF; --ink:#161B33; --muted:#5E6480; --line:#E1E3EE;
+  --hero:#1F2A63; --hero-2:#2C3A85; --on-hero:#FFFFFF; --on-hero-muted:#C9CFF0;
+  --marigold:#F0A23B; --marigold-soft:#FFF3E0; --marigold-ink:#8A4E00;
+  --red:#C2362B; --red-soft:#FCEBE9; --green:#2D7A57; --green-soft:#E5F3EC;
+  --t-bank:#3A4A9A; --t-fd:#0F7C86; --t-ins:#6B4FB3; --t-ppf:#2D7A57; --t-po:#C8242B; --t-loan:#A15C12;
+  --shadow:0 1px 2px rgba(22,27,51,.06),0 8px 24px rgba(22,27,51,.07);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1222; --surface:#181C30; --ink:#E9EBF5; --muted:#A0A6C2; --line:#2A3050;
+    --hero:#161D45; --hero-2:#222C66; --on-hero:#FFFFFF; --on-hero-muted:#AEB6E6;
+    --marigold:#F5B45A; --marigold-soft:#3A2A12; --marigold-ink:#F5C77E;
+    --red:#FF8A80; --red-soft:#3D1D1B; --green:#7FD4A6; --green-soft:#16302A;
+    --t-bank:#8E9BEA; --t-fd:#5CC6CF; --t-ins:#B7A2F0; --t-ppf:#7FD4A6; --t-po:#FF7B72; --t-loan:#E8A55C;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1222; --surface:#181C30; --ink:#E9EBF5; --muted:#A0A6C2; --line:#2A3050;
+  --hero:#161D45; --hero-2:#222C66; --on-hero:#FFFFFF; --on-hero-muted:#AEB6E6;
+  --marigold:#F5B45A; --marigold-soft:#3A2A12; --marigold-ink:#F5C77E;
+  --red:#FF8A80; --red-soft:#3D1D1B; --green:#7FD4A6; --green-soft:#16302A;
+  --t-bank:#8E9BEA; --t-fd:#5CC6CF; --t-ins:#B7A2F0; --t-ppf:#7FD4A6; --t-po:#FF7B72; --t-loan:#E8A55C;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Mukta","Segoe UI",system-ui,sans-serif}
+.display{font-family:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+a{color:inherit}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+
+/* Top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem;color:var(--on-hero)}
+.brand svg{flex:none}
+.switch{display:inline-flex;background:rgba(255,255,255,.12);border-radius:999px;padding:3px}
+.switch button{border:0;background:transparent;color:var(--on-hero-muted);padding:6px 14px;border-radius:999px;font-weight:600;font-size:.92rem;cursor:pointer}
+.switch button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+
+/* Hero */
+.hero{background:var(--hero);color:var(--on-hero);position:relative;overflow:hidden;padding-bottom:84px}
+.hero::before{content:"";position:absolute;inset:0;opacity:.09;pointer-events:none;
+  background-image:radial-gradient(circle at 50% 50%,#fff 1.4px,transparent 1.6px),radial-gradient(circle at 0 0,#fff 1.4px,transparent 1.6px);
+  background-size:26px 26px;background-position:0 0,13px 13px}
+.hero .wrap{position:relative}
+.family{display:flex;align-items:center;gap:10px;margin:22px 0 10px;color:var(--on-hero-muted);font-size:1rem}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;font-size:.82rem;font-weight:600}
+.pill.view{background:rgba(255,255,255,.14);color:var(--on-hero)}
+.headline{margin:0;max-width:20ch;font-weight:800;font-size:clamp(1.9rem,4.6vw,3.3rem);line-height:1.08;letter-spacing:-.02em}
+.num{border:0;background:var(--marigold);color:#1B1300;border-radius:12px;padding:0 .22em;margin:0 .05em;font-weight:800;cursor:pointer;line-height:1.1;display:inline-block}
+.num.red{background:#FF6B5E;color:#1F0603}
+.num.zero{background:rgba(255,255,255,.18);color:var(--on-hero);cursor:default}
+.num[aria-pressed="true"]{box-shadow:0 0 0 3px var(--on-hero)}
+.sub{margin:14px 0 0;color:var(--on-hero-muted);max-width:58ch}
+.lock{display:flex;gap:8px;align-items:flex-start;margin-top:18px;font-size:.9rem;color:var(--on-hero-muted);max-width:62ch}
+.lock svg{flex:none;margin-top:3px}
+
+/* Timeline */
+.timeline{margin-top:-60px;position:relative}
+.tl-card{background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:18px 18px 14px;border:1px solid var(--line)}
+.tl-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 10px;margin-bottom:12px}
+.tl-head h2{white-space:nowrap}
+.tl-head h2{margin:0;font-size:1.15rem;font-weight:700}
+.tl-head span{color:var(--muted);font-size:.88rem}
+.tiles{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}
+.tile{flex:0 0 190px;scroll-snap-align:start;display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--bg)}
+.tile.soon{border-color:var(--marigold);background:var(--marigold-soft)}
+.tile.over{border-color:var(--red);background:var(--red-soft)}
+.cal{flex:none;width:52px;border-radius:10px;overflow:hidden;text-align:center;background:var(--surface);border:1px solid var(--line)}
+.cal .m{display:block;background:var(--hero-2);color:#fff;font-size:.72rem;font-weight:600;padding:1px 0}
+.cal .d{display:block;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:1.35rem;line-height:1.3}
+.tile b{display:block;font-weight:600;font-size:.95rem;line-height:1.25}
+.tile small{display:block;color:var(--muted);font-size:.82rem}
+.tile .rel{font-weight:600;color:var(--ink)}
+.tile.soon .rel{color:var(--marigold-ink)}
+.tile.over .rel{color:var(--red)}
+
+/* Toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin:34px 0 16px}
+.toolbar h2{margin:0;font-size:1.5rem;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-weight:500;font-size:.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chip span{color:var(--muted);font-size:.8rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip[aria-pressed="true"] span{color:var(--bg);opacity:.75}
+.btn{border:0;border-radius:12px;padding:10px 18px;font-weight:600;cursor:pointer;background:var(--hero-2);color:#fff;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.small{padding:6px 12px;font-size:.88rem;border-radius:10px}
+.btn.danger{background:transparent;color:var(--red);border:1px solid var(--line)}
+.clear{border:0;background:none;color:var(--hero-2);text-decoration:underline;cursor:pointer;font-weight:600;padding:0}
+:root[data-theme="dark"] .clear{color:var(--marigold)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .clear{color:var(--marigold)}}
+
+/* Folder cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:22px 18px}
+.folder{--tc:var(--t-bank)}
+.folder.t-fd{--tc:var(--t-fd)} .folder.t-ins{--tc:var(--t-ins)} .folder.t-ppf{--tc:var(--t-ppf)} .folder.t-po{--tc:var(--t-po)} .folder.t-loan{--tc:var(--t-loan)}
+.tab{display:inline-block;margin-left:16px;background:var(--tc);color:#fff;font-size:.8rem;font-weight:600;padding:3px 14px 3px;border-radius:10px 10px 0 0}
+:root[data-theme="dark"] .tab{color:#0F1222}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tab{color:#0F1222}}
+.sheet{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--tc);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px 14px;height:calc(100% - 26px);display:flex;flex-direction:column}
+.folder.flag .sheet{box-shadow:inset 4px 0 0 var(--red),var(--shadow)}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.head h3{margin:0;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;font-size:1.2rem;line-height:1.2}
+.inst{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.badges{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.pill.missing{background:var(--red-soft);color:var(--red)}
+.pill.soon{background:var(--marigold-soft);color:var(--marigold-ink)}
+.pill.over{background:var(--red-soft);color:var(--red)}
+.facts{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:9px}
+.facts li{display:grid;grid-template-columns:20px 1fr;gap:10px;align-items:start;font-size:.95rem}
+.facts svg{margin-top:3px;color:var(--muted)}
+.facts .k{display:block;color:var(--muted);font-size:.78rem;line-height:1.2}
+.facts .v{display:block;overflow-wrap:anywhere;line-height:1.35}
+.ok{color:var(--green);font-weight:600}
+.bad{color:var(--red);font-weight:600}
+.facts a{color:var(--hero-2);font-weight:600}
+:root[data-theme="dark"] .facts a{color:var(--marigold)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .facts a{color:var(--marigold)}}
+.actions{display:flex;gap:8px;margin-top:auto;padding-top:14px}
+.empty{grid-column:1/-1;text-align:center;padding:40px 20px;border:2px dashed var(--line);border-radius:16px;color:var(--muted)}
+
+footer{margin:40px 0 30px;color:var(--muted);font-size:.88rem;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
+footer button{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:0}
+
+/* Dialog */
+dialog{border:0;border-radius:20px;padding:0;width:min(620px,94vw);max-height:92vh;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(12,16,36,.55);backdrop-filter:blur(3px)}
+dialog[open]{animation:pop .18s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (max-width:600px){dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:20px 20px 0 0;max-height:94vh}}
+form{display:flex;flex-direction:column;max-height:92vh}
+.f-head{padding:20px 22px 8px}
+.f-head h2{margin:0;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.5rem}
+.f-body{padding:4px 22px 8px;overflow:auto}
+fieldset{border:0;margin:0 0 6px;padding:12px 0 6px;border-top:1px solid var(--line)}
+fieldset:first-child{border-top:0}
+legend{font-weight:600;font-size:.95rem;padding:0;margin-bottom:2px}
+label{display:block;font-size:.85rem;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:400 1rem "Mukta",system-ui,sans-serif}
+input:disabled{opacity:.5}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+.err{color:var(--red);background:var(--red-soft);font-size:.92rem;font-weight:500;margin:0;padding:10px 22px}
+.err:empty{display:none}
+.f-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 22px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:600;transition:all .2s;pointer-events:none;z-index:20}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="top">
+      <div class="brand display">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M3 8a3 3 0 0 1 3-3h5l3 3h8a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z" fill="#F0A23B"/><path d="M3 12h22v9a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z" fill="#FFFFFF" opacity=".9"/></svg>
+        ParivaarMap
+      </div>
+      <div class="switch" role="group" aria-label="Choose view">
+        <button id="vOwner" aria-pressed="true">Owner</button>
+        <button id="vFamily" aria-pressed="false">Family</button>
+      </div>
+    </div>
+
+    <p class="family"><span>The Sharma family</span><span class="pill view" id="viewPill" hidden>View only</span></p>
+    <h1 class="headline display" id="headline"></h1>
+    <p class="sub" id="sub"></p>
+    <p class="lock">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <span>Never enter passwords, PINs or full account numbers. Write the bank name and last 4 digits at most.</span>
+    </p>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="timeline" id="timeline" aria-labelledby="tlTitle">
+    <div class="tl-card">
+      <div class="tl-head"><h2 id="tlTitle" class="display">Coming up</h2><span>Highlighted if due within 15 days</span></div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <h2 class="display">Everything we have and owe</h2>
+    <button class="btn" id="addBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add item</button>
+  </div>
+  <div class="chips" id="chips" role="group" aria-label="Filter"></div>
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <span>Saved in this browser only. No login in this version; the view switch shows what family members would see.</span>
+    <button id="resetBtn">Reset to sample family data</button>
+  </footer>
+</main>
+
+<dialog id="dlg" aria-labelledby="formTitle">
+  <form id="form" novalidate>
+    <div class="f-head"><h2 id="formTitle">Add item</h2></div>
+    <div class="f-body">
+      <fieldset>
+        <legend>What is it</legend>
+        <div class="row">
+          <div><label for="fName">Item name</label><input id="fName" placeholder="e.g. LIC Jeevan Anand"></div>
+          <div><label for="fInst">Institution</label><input id="fInst" placeholder="e.g. LIC, SBI, Post Office"></div>
+        </div>
+        <label for="fType">Type</label>
+        <select id="fType"></select>
+      </fieldset>
+      <fieldset>
+        <legend>Nominee</legend>
+        <div class="row">
+          <div><label for="fNomStatus">Status</label>
+            <select id="fNomStatus"><option value="verified">Added</option><option value="missing">Missing</option><option value="na">Not applicable (loans)</option></select></div>
+          <div><label for="fNomName">Nominee name</label><input id="fNomName" placeholder="e.g. Sunita Sharma"></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Dates and payments</legend>
+        <div class="row">
+          <div><label for="fDateType">Date type</label>
+            <select id="fDateType"><option>Maturity date</option><option>Premium due</option><option>EMI due</option><option>Deposit due</option><option value="">No date</option></select></div>
+          <div><label for="fDate">Date</label><input id="fDate" type="date"></div>
+        </div>
+        <label for="fLinked">Bank account it is paid from or paid into</label>
+        <input id="fLinked" placeholder="e.g. SBI savings (ending 4417)">
+      </fieldset>
+      <fieldset>
+        <legend>Papers and contact</legend>
+        <label for="fDocs">Where the papers are kept</label>
+        <input id="fDocs" placeholder="e.g. Blue folder, bedroom almirah">
+        <div class="row">
+          <div><label for="fPoc">Who to contact</label><input id="fPoc" placeholder="e.g. Verma ji, LIC agent"></div>
+          <div><label for="fPhone">Contact phone</label><input id="fPhone" inputmode="tel" placeholder="e.g. 98300 12345"></div>
+        </div>
+      </fieldset>
+    </div>
+    <p class="err" id="err" role="alert"></p>
+    <div class="f-foot">
+      <button type="button" class="btn ghost" id="cancelBtn">Cancel</button>
+      <button type="submit" class="btn" id="saveBtn">Save item</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var KEY = "parivaarmap-v1";
+  var TYPES = ["Bank account","FD","Insurance (LIC)","PPF","Post Office scheme","Loan / EMI"];
+  var TCLASS = {"Bank account":"t-bank","FD":"t-fd","Insurance (LIC)":"t-ins","PPF":"t-ppf","Post Office scheme":"t-po","Loan / EMI":"t-loan"};
+  var TVAR = {"Bank account":"--t-bank","FD":"--t-fd","Insurance (LIC)":"--t-ins","PPF":"--t-ppf","Post Office scheme":"--t-po","Loan / EMI":"--t-loan"};
+  var SOON = 15;
+  var IC = {
+    user:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+    cal:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+    bank:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10 12 4l9 6M5 10v8M19 10v8M9 10v8M15 10v8M3 20h18"/></svg>',
+    folder:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+    phone:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>'
+  };
+
+  function iso(offset){
+    var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+offset);
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function seed(){
+    return [
+      {id:"s1",name:"SBI Savings Account",inst:"SBI, Station Road branch",type:"Bank account",nom:"verified",nomName:"Sunita Sharma",dateType:"",date:"",linked:"Main account (ending 4417)",docs:"Passbook in blue folder, bedroom almirah",poc:"SBI branch manager",phone:"0322 225 5100"},
+      {id:"s2",name:"HDFC Savings Account",inst:"HDFC Bank",type:"Bank account",nom:"missing",nomName:"",dateType:"",date:"",linked:"Salary account (ending 2093)",docs:"Cheque book in study table drawer",poc:"HDFC relationship manager",phone:"98300 41122"},
+      {id:"s3",name:"SBI Fixed Deposit",inst:"SBI",type:"FD",nom:"verified",nomName:"Sunita Sharma",dateType:"Maturity date",date:iso(118),linked:"Pays into SBI savings (4417)",docs:"FD receipt in blue folder",poc:"SBI branch manager",phone:"0322 225 5100"},
+      {id:"s4",name:"LIC Jeevan Anand",inst:"LIC of India",type:"Insurance (LIC)",nom:"verified",nomName:"Sunita Sharma",dateType:"Premium due",date:iso(9),linked:"Paid from SBI savings (4417)",docs:"Original policy bond, red file in steel almirah locker",poc:"Verma ji, LIC agent",phone:"94340 77812"},
+      {id:"s5",name:"PPF Account",inst:"Post Office",type:"PPF",nom:"missing",nomName:"",dateType:"Deposit due",date:iso(130),linked:"Paid from SBI savings (4417)",docs:"PPF passbook in blue folder",poc:"Kharagpur head post office",phone:""},
+      {id:"s6",name:"Post Office Time Deposit (5 yr)",inst:"Post Office",type:"Post Office scheme",nom:"missing",nomName:"",dateType:"Maturity date",date:iso(410),linked:"Pays into SBI savings (4417)",docs:"TD passbook in red file",poc:"Kharagpur head post office",phone:""},
+      {id:"s7",name:"Home Loan",inst:"HDFC Bank",type:"Loan / EMI",nom:"na",nomName:"",dateType:"EMI due",date:iso(4),linked:"Auto-debit from HDFC savings (2093)",docs:"Loan agreement in brown envelope, almirah top shelf",poc:"HDFC loan desk",phone:"98300 41122"},
+      {id:"s8",name:"Car Loan",inst:"SBI",type:"Loan / EMI",nom:"na",nomName:"",dateType:"EMI due",date:iso(24),linked:"Auto-debit from SBI savings (4417)",docs:"Loan papers: copy in car glovebox, original in blue folder",poc:"SBI branch manager",phone:"0322 225 5100"}
+    ];
+  }
+
+  var items, view="owner", typeFilter="All", missingOnly=false, editingId=null;
+  function load(){
+    try{ var raw=localStorage.getItem(KEY); if(raw){ var p=JSON.parse(raw); if(Array.isArray(p)) return p; } }catch(e){}
+    return seed();
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(items)); }catch(e){} }
+  items = load();
+
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];}); }
+  function daysUntil(d){ if(!d) return null; var t=new Date(); t.setHours(0,0,0,0); return Math.round((new Date(d+"T00:00:00")-t)/86400000); }
+  function fmtDate(d){ return new Date(d+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}); }
+  function relText(n){ if(n===0) return "Today"; if(n<0) return "Overdue by "+(-n)+" day"+(n===-1?"":"s"); return "In "+n+" day"+(n===1?"":"s"); }
+  function state(n){ return n==null ? "" : (n<0 ? "over" : (n<=SOON ? "soon" : "")); }
+  var toastT;
+  function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove("show");},1800); }
+
+  function renderHero(){
+    var miss = items.filter(function(i){return i.nom==="missing";}).length;
+    var due = items.filter(function(i){var n=daysUntil(i.date); return i.date && n<=SOON;}).length;
+    var mBtn = '<button class="num red'+(miss?'':' zero')+'" id="missBtn" aria-pressed="'+missingOnly+'" '+(miss?'':'disabled')+' title="Show items with no nominee">'+miss+'</button>';
+    var dBtn = '<button class="num'+(due?'':' zero')+'" id="dueBtn" '+(due?'':'disabled')+' title="See upcoming dates">'+due+'</button>';
+    var a = miss ? (mBtn+' item'+(miss===1?' has':'s have')+' no nominee') : 'Every item has a nominee';
+    var b = due ? (dBtn+' payment'+(due===1?' is':'s are')+' due in the next 15 days.') : 'nothing is due in the next 15 days.';
+    $("headline").innerHTML = a + (miss ? ', and ' : ', and ') + b;
+    $("sub").textContent = view==="family"
+      ? "This is what the family sees: what we have, who the nominee is, where the papers are, and who to call."
+      : items.length+" items mapped. Fill the gaps so anyone in the family can find what they need.";
+    var mb=$("missBtn"); if(mb && miss) mb.onclick=function(){ missingOnly=!missingOnly; typeFilter="All"; render(); document.querySelector(".toolbar").scrollIntoView(); };
+    var db=$("dueBtn"); if(db && due) db.onclick=function(){ $("timeline").scrollIntoView(); };
+  }
+
+  function renderTiles(){
+    var dated = items.filter(function(i){return i.date;}).map(function(i){return {i:i,n:daysUntil(i.date)};}).sort(function(a,b){return a.n-b.n;}).slice(0,6);
+    if(!dated.length){ $("tiles").innerHTML='<p style="color:var(--muted);margin:0">No dates added yet.</p>'; return; }
+    $("tiles").innerHTML = dated.map(function(o){
+      var d = new Date(o.i.date+"T00:00:00");
+      return '<div class="tile '+state(o.n)+'"><div class="cal"><span class="m">'+d.toLocaleDateString("en-IN",{month:"short"})+'</span><span class="d">'+d.getDate()+'</span></div>'+
+        '<div><b>'+esc(o.i.name)+'</b><small>'+esc(o.i.dateType||"Date")+'</small><small class="rel">'+esc(relText(o.n))+'</small></div></div>';
+    }).join("");
+  }
+
+  function renderChips(){
+    var all = [{t:"All",n:items.length}].concat(TYPES.map(function(t){return {t:t,n:items.filter(function(i){return i.type===t;}).length};}));
+    var html = all.map(function(c){
+      var dot = c.t==="All" ? "" : '<i style="--c:var('+TVAR[c.t]+')"></i>';
+      return '<button class="chip" data-t="'+esc(c.t)+'" aria-pressed="'+(!missingOnly && c.t===typeFilter)+'">'+dot+esc(c.t)+' <span>'+c.n+'</span></button>';
+    }).join("");
+    if(missingOnly) html = '<button class="chip" aria-pressed="true" data-clear="1"><i style="--c:var(--red)"></i>No nominee <span>clear</span></button>' + html;
+    $("chips").innerHTML = html;
+  }
+
+  function renderGrid(){
+    var list = items.filter(function(i){ return (typeFilter==="All"||i.type===typeFilter) && (!missingOnly||i.nom==="missing"); });
+    if(!list.length){ $("grid").innerHTML='<div class="empty">Nothing here yet.'+(view==="owner"?' Use Add item to put the first one on the map.':'')+'</div>'; return; }
+    $("grid").innerHTML = list.map(function(i){
+      var n = daysUntil(i.date), st = state(n);
+      var nom = i.nom==="verified" ? '<span class="ok">'+esc(i.nomName||"Added")+'</span>' : i.nom==="missing" ? '<span class="bad">Not added</span>' : '<span>Not applicable</span>';
+      var dateV = i.date ? esc(fmtDate(i.date))+' <span class="'+(st==="over"?"bad":"")+'">('+esc(relText(n).toLowerCase())+')</span>' : 'No date';
+      var contact = esc(i.poc||"Not added") + (i.phone ? '<br><a href="tel:'+esc(i.phone.replace(/\s/g,""))+'">'+esc(i.phone)+'</a>' : "");
+      var badges = (i.nom==="missing"?'<span class="pill missing">No nominee</span>':'') + (st==="soon"?'<span class="pill soon">Due soon</span>':'') + (st==="over"?'<span class="pill over">Overdue</span>':'');
+      return '<article class="folder '+(TCLASS[i.type]||"t-bank")+(i.nom==="missing"?" flag":"")+'">'+
+        '<span class="tab">'+esc(i.type)+'</span>'+
+        '<div class="sheet">'+
+          '<div class="head"><div><h3>'+esc(i.name)+'</h3><p class="inst">'+esc(i.inst)+'</p></div><div class="badges">'+badges+'</div></div>'+
+          '<ul class="facts">'+
+            '<li>'+IC.user+'<div><span class="k">Nominee</span><span class="v">'+nom+'</span></div></li>'+
+            '<li>'+IC.cal+'<div><span class="k">'+esc(i.dateType||"Date")+'</span><span class="v">'+dateV+'</span></div></li>'+
+            '<li>'+IC.bank+'<div><span class="k">Bank account</span><span class="v">'+esc(i.linked||"Not added")+'</span></div></li>'+
+            '<li>'+IC.folder+'<div><span class="k">Papers kept at</span><span class="v">'+esc(i.docs||"Not added")+'</span></div></li>'+
+            '<li>'+IC.phone+'<div><span class="k">Who to call</span><span class="v">'+contact+'</span></div></li>'+
+          '</ul>'+
+          (view==="owner" ? '<div class="actions"><button class="btn ghost small" data-edit="'+esc(i.id)+'">Edit</button><button class="btn danger small" data-del="'+esc(i.id)+'">Delete</button></div>' : '')+
+        '</div></article>';
+    }).join("");
+  }
+
+  function render(){
+    $("vOwner").setAttribute("aria-pressed", String(view==="owner"));
+    $("vFamily").setAttribute("aria-pressed", String(view==="family"));
+    $("addBtn").hidden = view!=="owner";
+    $("viewPill").hidden = view!=="family";
+    renderHero(); renderTiles(); renderChips(); renderGrid();
+  }
+
+  $("vOwner").onclick=function(){ view="owner"; render(); };
+  $("vFamily").onclick=function(){ view="family"; render(); };
+  $("chips").onclick=function(e){
+    var c=e.target.closest("[data-clear]"); if(c){ missingOnly=false; render(); return; }
+    var b=e.target.closest("[data-t]"); if(b){ typeFilter=b.getAttribute("data-t"); missingOnly=false; render(); }
+  };
+  $("grid").onclick=function(e){
+    if(view!=="owner") return;
+    var ed=e.target.closest("[data-edit]"), dl=e.target.closest("[data-del]");
+    if(ed) openForm(ed.getAttribute("data-edit"));
+    if(dl){
+      var it=items.find(function(x){return x.id===dl.getAttribute("data-del");});
+      if(it && confirm("Delete “"+it.name+"”? This cannot be undone.")){ items=items.filter(function(x){return x.id!==it.id;}); save(); render(); toast("Deleted"); }
+    }
+  };
+  $("addBtn").onclick=function(){ openForm(null); };
+  $("resetBtn").onclick=function(){ if(confirm("Replace all items with the sample family data?")){ items=seed(); save(); typeFilter="All"; missingOnly=false; render(); toast("Sample data restored"); } };
+
+  $("fType").innerHTML = TYPES.map(function(t){return '<option>'+esc(t)+'</option>';}).join("");
+  function syncNom(){ var v=$("fNomStatus").value; $("fNomName").disabled = v!=="verified"; if(v!=="verified") $("fNomName").value=""; }
+  $("fNomStatus").onchange=syncNom;
+  $("fType").onchange=function(){ if($("fType").value==="Loan / EMI"){ $("fNomStatus").value="na"; syncNom(); } };
+
+  function openForm(id){
+    editingId=id; $("err").textContent="";
+    var i = id ? items.find(function(x){return x.id===id;}) : {name:"",inst:"",type:TYPES[0],nom:"missing",nomName:"",dateType:"",date:"",linked:"",docs:"",poc:"",phone:""};
+    $("formTitle").textContent = id ? "Edit item" : "Add item";
+    $("saveBtn").textContent = id ? "Save changes" : "Save item";
+    $("fName").value=i.name; $("fInst").value=i.inst; $("fType").value=i.type;
+    $("fNomStatus").value=i.nom; $("fNomName").value=i.nomName;
+    $("fDateType").value=i.dateType||""; $("fDate").value=i.date||"";
+    $("fLinked").value=i.linked; $("fDocs").value=i.docs; $("fPoc").value=i.poc; $("fPhone").value=i.phone;
+    syncNom(); $("dlg").showModal(); $("fName").focus();
+  }
+  $("cancelBtn").onclick=function(){ $("dlg").close(); };
+
+  var LONG_DIGITS=/\d[\d\s-]{7,}\d/;
+  var SECRET_WORDS=/\b(password|passwd|pin|cvv|otp|mpin|upi pin)\b/i;
+
+  $("form").onsubmit=function(e){
+    e.preventDefault();
+    var v={ name:$("fName").value.trim(), inst:$("fInst").value.trim(), type:$("fType").value,
+      nom:$("fNomStatus").value, nomName:$("fNomName").value.trim(),
+      dateType:$("fDateType").value, date:$("fDate").value,
+      linked:$("fLinked").value.trim(), docs:$("fDocs").value.trim(), poc:$("fPoc").value.trim(), phone:$("fPhone").value.trim() };
+    function fail(msg,id){ $("err").textContent=msg; $(id).focus(); }
+    if(!v.name) return fail("Add an item name, for example “LIC Jeevan Anand”.","fName");
+    if(v.nom==="verified" && !v.nomName) return fail("Enter the nominee’s name, or set the status to Missing.","fNomName");
+    if(v.dateType && !v.date) return fail("Pick a date, or set Date type to No date.","fDate");
+    if(!v.dateType) v.date="";
+    var tf=[["fName",v.name],["fInst",v.inst],["fNomName",v.nomName],["fLinked",v.linked],["fDocs",v.docs],["fPoc",v.poc]];
+    for(var k=0;k<tf.length;k++){
+      if(LONG_DIGITS.test(tf[k][1])) return fail("This looks like a full account or policy number. Write only the last 4 digits.",tf[k][0]);
+      if(SECRET_WORDS.test(tf[k][1])) return fail("Do not store passwords, PINs or OTPs here.",tf[k][0]);
+    }
+    var digits=v.phone.replace(/\D/g,"");
+    if(v.phone && (digits.length<10||digits.length>12)) return fail("Enter a 10-digit phone number, or leave it blank.","fPhone");
+    if(editingId){ items=items.map(function(x){return x.id===editingId?Object.assign({id:x.id},v):x;}); }
+    else { items.push(Object.assign({id:"i"+Date.now()},v)); }
+    save(); $("dlg").close(); render(); toast(editingId?"Changes saved":"Item saved");
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
